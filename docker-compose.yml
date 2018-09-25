@@ -21,21 +21,18 @@
 ##   $ cp env-example .env
 ##
 
-
-version: '2.1'
-
+version: "2.1"
 
 ################################################################################
 # SERVICES
 ################################################################################
 services:
-
   # ------------------------------------------------------------
   # Bind (DNS Server)
   # ------------------------------------------------------------
   bind:
     image: cytopia/bind:0.15
-    restart: always
+    restart: unless-stopped
     ports:
       # [local-machine:]local-port:docker-port
       - "${LOCAL_LISTEN_ADDR}${HOST_PORT_BIND:-1053}:53/tcp"
@@ -89,13 +86,12 @@ services:
       app_net:
         ipv4_address: 172.16.238.100
 
-
   # ------------------------------------------------------------
   # PHP / HHVM
   # ------------------------------------------------------------
   php:
     image: devilbox/php-fpm:${PHP_SERVER:-7.0}-work
-    restart: always
+    restart: unless-stopped
 
     ##
     ## All .env variables
@@ -191,16 +187,14 @@ services:
     depends_on:
       - bind
 
-
   # ------------------------------------------------------------
   # Web Server
   # ------------------------------------------------------------
   httpd:
     image: devilbox/${HTTPD_SERVER:-nginx-stable}:0.15
-    restart: always
+    restart: unless-stopped
 
     environment:
-
       ##
       ## Debug/Logging
       ##
@@ -279,15 +273,13 @@ services:
       - bind
       - php
 
-
   # ------------------------------------------------------------
   # MySQL Database
   # ------------------------------------------------------------
   mysql:
     image: cytopia/${MYSQL_SERVER:-mariadb-10.1}:latest
-
+    restart: unless-stopped
     environment:
-
       ##
       ## Debug?
       ##
@@ -343,7 +335,6 @@ services:
       - php
       - httpd
 
-
   # ------------------------------------------------------------
   # PostgreSQL
   # ------------------------------------------------------------
@@ -351,7 +342,6 @@ services:
     image: postgres:${PGSQL_SERVER:-9.6}
 
     environment:
-
       - POSTGRES_USER=${PGSQL_ROOT_USER}
       - POSTGRES_PASSWORD=${PGSQL_ROOT_PASSWORD}
       - PGDATA=/var/lib/postgresql/data/pgdata
@@ -379,7 +369,6 @@ services:
       - php
       - httpd
 
-
   # ------------------------------------------------------------
   # Redis
   # ------------------------------------------------------------
@@ -405,7 +394,6 @@ services:
       - bind
       - php
       - httpd
-
 
   # ------------------------------------------------------------
   # Memcached
@@ -433,7 +421,6 @@ services:
       - php
       - httpd
 
-
   # ------------------------------------------------------------
   # MongoDB
   # ------------------------------------------------------------
@@ -459,7 +446,6 @@ services:
       - bind
       - php
       - httpd
-
 
 ################################################################################
 # NETWORK
